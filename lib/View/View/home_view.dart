@@ -16,7 +16,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  GlobalKey<ScaffoldState> _globalKey = GlobalKey<ScaffoldState>();
   HomeViewModel viewModel = HomeViewModel();
   @override
   void initState() {
@@ -28,9 +27,10 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        key: _globalKey,
+        key: viewModel.globalKey,
         appBar: buildAppBar(),
         body: buildBody(context),
+        floatingActionButton: buildFloatingActionButton(),
       ),
     );
   }
@@ -41,7 +41,7 @@ class _HomeViewState extends State<HomeView> {
       leading: IconButton(
         icon: Icon(Icons.menu),
         onPressed: () {
-          _globalKey.currentState.showBottomSheet(
+          viewModel.globalKey.currentState.showBottomSheet(
             (context) => BottomSheetPanelBody(),
           );
         },
@@ -67,8 +67,22 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  FloatingActionButton buildFloatingActionButton() {
+    return FloatingActionButton(
+      child: Icon(
+        Icons.arrow_upward,
+        color: context.theme.backgroundColor,
+      ),
+      onPressed: () {
+        viewModel.scrollController
+            .animateTo(0, duration: Duration(seconds: 1), curve: Curves.easeIn);
+      },
+    );
+  }
+
   Widget buildList(List<HPCharacters> list) {
     return ListView.builder(
+        controller: viewModel.scrollController,
         shrinkWrap: true,
         itemCount: list.length,
         itemBuilder: (context, index) {
